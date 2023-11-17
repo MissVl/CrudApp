@@ -1,0 +1,140 @@
+<!-- tutorials.html -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <link rel="stylesheet" href="https://bootswatch.com/5/sketchy/bootstrap.min.css">
+</head>
+
+<body>
+  {% include 'fragments/navbar.html' %}
+
+  <div class="container mt-4">
+    <h2>Tutorials <button type="button" class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#addTutorialModal">+</button></h2>
+    <div class="row">
+      {% for tutorial in tutorial_list %}
+      <div class="col-md-4 mb-3">
+        <div class="card border-primary">
+          <div class="card-header d-flex justify-content-between align-items-center card-title" style="font-size:  24px;">
+            <span>
+              {% for info in general_info_list %}
+              {% if info.id == tutorial.info.id %}
+              {{ info.topic }}
+              {% endif %}
+              {% endfor %}
+            </span>
+            <div class=" btn-group ms-auto">
+              <button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#updateTutorialModal{{ tutorial.id }}">Update</button>
+              <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteTutorialModal{{ tutorial.id }}">Delete</button>
+            </div>
+          </div>
+          <div class="card-body">
+            <h4 class="card-title">
+              {{ tutorial.title }}
+            </h4>
+            <p class="card-text">
+              {{ tutorial.steps|linebreaksbr }}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Update Tutorial Modal -->
+      <div class="modal fade" id="updateTutorialModal{{ tutorial.id }}" tabindex="-1" aria-labelledby="updateTutorialModalLabel{{ tutorial.id }}" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="updateTutorialModalLabel{{ tutorial.id }}">Update Tutorial</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <form method="post" action="{% url 'update_tutorial' tutorial.id %}">
+                {% csrf_token %}
+                <div class="mb-3">
+                  <label for="title" class="form-label">Updated Title</label>
+                  <input type="text" class="form-control" id="title" name="title" value="{{ tutorial.title }}" required>
+                </div>
+                <div class="mb-3">
+                  <label for="steps" class="form-label">Updated Steps</label>
+                  <textarea class="form-control" id="steps" name="steps" rows="3" required>
+                  {{ tutorial.steps }}</textarea>
+                </div>
+                <div class="mb-3">
+                  <label for="info" class="form-label">General Information</label>
+                  <select class="form-select" id="info" name="info" required>
+                    {% for info in general_info_list %}
+                    <option value="{{ info.id }}" {% if info.id == tutorial.info.id %}selected{% endif %}>
+                      {{ info.topic }}
+                    </option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Update Tutorial</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal fade" id="deleteTutorialModal{{ tutorial.id }}" tabindex="-1" aria-labelledby="deleteTutorialModalLabel{{ tutorial.id }}" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="deleteTutorialModalLabel{{ tutorial.id }}">Delete Tutorial</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <p>Are you sure you want to delete this tutorial?</p>
+              <form method="post" action="{% url 'delete_tutorial' tutorial.id %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">Delete</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Add Tutorial Modal -->
+  <div class="modal fade" id="addTutorialModal" tabindex="-1" aria-labelledby="addTutorialModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addTutorialModalLabel">Add Tutorial</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form method="post" action="{% url 'add_tutorial' %}">
+            {% csrf_token %}
+            <div class="mb-3">
+              <label for="title" class="form-label">Title</label>
+              <input type="text" class="form-control" id="title" name="title" required>
+            </div>
+            <div class="mb-3">
+              <label for="steps" class="form-label">Steps</label>
+              <textarea class="form-control" id="steps" name="steps" rows="3" required></textarea>
+            </div>
+            <div class="mb-3">
+              <label for="info" class="form-label">General Information</label>
+              <select class="form-select" id="info" name="info" required>
+                {% for info in general_info_list %}
+                <option value="{{ info.id }}">
+                  {{ info.topic }}
+                </option>
+                {% endfor %}
+              </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Add Tutorial</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+
+</html>

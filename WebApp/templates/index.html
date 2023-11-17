@@ -1,0 +1,111 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <link rel="stylesheet" href="https://bootswatch.com/5/sketchy/bootstrap.min.css">
+</head>
+
+<body>
+  {% include 'fragments/navbar.html' %}
+
+  <div class="container mt-4">
+    <h2>General Information <button type="button" class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#addInfoModal">+</button></h2>
+    <div class="row">
+      {% for info in general_info_list %}
+      <div class="col-md-4 mb-3">
+        <div class="card border-primary">
+          <div class="card-header d-flex justify-content-between align-items-center card-title" style="font-size:  24px;">
+            {{ info.topic }}
+            <div class=" btn-group ms-auto">
+              <button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#updateInfoModal{{ info.id }}">Update</button>
+              <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteInfoModal{{ info.id }}">Delete</button>
+            </div>
+          </div>
+          <div class="card-body">
+            <p class="card-text">
+              {{ info.description|linebreaksbr }}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Update General Information Modal -->
+      <div class="modal fade" id="updateInfoModal{{ info.id }}" tabindex="-1" aria-labelledby="updateInfoModalLabel{{ info.id }}" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="updateInfoModalLabel{{ info.id }}">Update General Information</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <form method="post" action="update_general_info/{{info.id}}/">
+                {% csrf_token %}
+                <div class="mb-3">
+                  <label for="topic" class="form-label">Updated Topic</label>
+                  <input type="text" class="form-control" id="topic" name="topic" value="{{ info.topic }}" required>
+                </div>
+                <div class="mb-3">
+                  <label for="description" class="form-label">Updated Description</label>
+                  <textarea class="form-control" id="description" name="description" rows="3" required>
+                  {{ info.description }}</textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Update Information</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal fade" id="deleteInfoModal{{ info.id }}" tabindex="-1" aria-labelledby="deleteInfoModalLabel{{ info.id }}" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="deleteInfoModalLabel{{ info.id }}">Delete General Information</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <p>Are you sure you want to delete this information?</p>
+              <form method="post" action="delete_general_info/{{info.id}}/">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">Delete</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+
+  <!-- Add General Information Modal -->
+  <div class="modal fade" id="addInfoModal" tabindex="-1" aria-labelledby="addInfoModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addInfoModalLabel">Add General Information</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form method="post" action="{% url 'add_general_info' %}">
+            {% csrf_token %}
+            <div class="mb-3">
+              <label for="topic" class="form-label">Topic</label>
+              <input type="text" class="form-control" id="topic" name="topic" required>
+            </div>
+            <div class="mb-3">
+              <label for="description" class="form-label">Description</label>
+              <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Add Information</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
